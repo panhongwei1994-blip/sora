@@ -38,19 +38,22 @@ const canonical = lang === "en" ? "/" : `/${lang}`;
           {content.brand}
         </a>
         <div class="header-actions">
-          <div class="locale-select-shell">
-            <select
-              class="locale-select"
-              aria-label="Language"
-              onchange={`window.location.href=this.value`}
-            >
+          <details class="locale-menu">
+            <summary class="locale-trigger">
+              <span>{lang.toUpperCase()}</span>
+              <span class="locale-caret">▾</span>
+            </summary>
+            <div class="locale-popover">
               {localeUrls.map((item) => (
-                <option value={item.url} selected={item.active}>
+                <a
+                  href={item.url}
+                  class:list={["locale-option", { active: item.active }]}
+                >
                   {item.locale.toUpperCase()}
-                </option>
+                </a>
               ))}
-            </select>
-          </div>
+            </div>
+          </details>
           <button type="button" class="header-ghost" onclick={`window.dispatchEvent(new CustomEvent('open-cart'))`}>
             {content.cartNav}
           </button>
@@ -81,7 +84,8 @@ const canonical = lang === "en" ? "/" : `/${lang}`;
       rgba(8,10,16,.72);
   }
   .brand-mark,
-  .locale-select,
+  .locale-trigger,
+  .locale-option,
   .header-order,
   .header-ghost {
     font-family: ui-sans-serif, system-ui, sans-serif;
@@ -99,23 +103,57 @@ const canonical = lang === "en" ? "/" : `/${lang}`;
     align-items: center;
     flex-wrap: wrap;
   }
-  .locale-select-shell,
+  .locale-menu,
+  .locale-trigger,
   .header-ghost {
-    padding: 8px 12px;
     border-radius: 999px;
     color: rgba(246,239,230,.68);
   }
-  .locale-select-shell {
+  .locale-menu {
+    position: relative;
+  }
+  .locale-trigger {
+    list-style: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
     border: 1px solid rgba(255,255,255,.08);
     background: rgba(255,255,255,.03);
+    cursor: pointer;
   }
-  .locale-select {
-    border: 0;
-    background: transparent;
-    color: rgba(246,239,230,.82);
-    padding-right: 14px;
-    text-transform: uppercase;
-    appearance: none;
+  .locale-trigger::-webkit-details-marker {
+    display: none;
+  }
+  .locale-caret {
+    color: rgba(244,213,154,.82);
+    font-size: 11px;
+  }
+  .locale-popover {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    min-width: 88px;
+    display: grid;
+    gap: 6px;
+    padding: 8px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,.08);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03)),
+      rgba(10,12,18,.96);
+    box-shadow: 0 18px 48px rgba(0,0,0,.34);
+  }
+  .locale-option {
+    padding: 10px 12px;
+    border-radius: 14px;
+    color: rgba(246,239,230,.78);
+    text-align: center;
+  }
+  .locale-option.active,
+  .locale-option:hover {
+    background: rgba(212,165,74,.14);
+    color: var(--gold-soft);
   }
   .header-ghost {
     border: 0;
@@ -136,6 +174,10 @@ const canonical = lang === "en" ? "/" : `/${lang}`;
     }
     .header-actions {
       justify-content: space-between;
+    }
+    .locale-popover {
+      right: auto;
+      left: 0;
     }
   }
 </style>

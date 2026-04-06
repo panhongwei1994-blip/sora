@@ -121,85 +121,87 @@
       <aside class="cart-panel card">
         <button class="close-button" type="button" @click="cartOpen = false">×</button>
         <div class="cart-body">
-          <div>
-            <p class="eyebrow-inner">{{ copy.checkout }}</p>
-            <h3>{{ copy.cartTitle }}</h3>
-          </div>
+          <div class="cart-scroll">
+            <div>
+              <p class="eyebrow-inner">{{ copy.checkout }}</p>
+              <h3>{{ copy.cartTitle }}</h3>
+            </div>
 
-          <div v-if="!cart.length" class="empty-state">{{ copy.emptyCart }}</div>
-          <div v-else class="cart-items">
-            <article v-for="item in cart" :key="item.id" class="cart-item">
-              <img :src="item.image" :alt="item.name" />
-              <div>
-                <div class="cart-item-head">
-                  <strong>{{ item.name }}</strong>
-                  <strong>{{ format(item.total) }}</strong>
-                </div>
-                <p v-if="item.addOnLabels.length">{{ item.addOnLabels.join(" · ") }}</p>
-                <p v-if="item.notes">{{ item.notes }}</p>
-                <div class="cart-item-actions">
-                  <div class="quantity-control small">
-                    <button type="button" @click="changeQty(item.id, -1)">-</button>
-                    <span>{{ item.quantity }}</span>
-                    <button type="button" @click="changeQty(item.id, 1)">+</button>
+            <div v-if="!cart.length" class="empty-state">{{ copy.emptyCart }}</div>
+            <div v-else class="cart-items">
+              <article v-for="item in cart" :key="item.id" class="cart-item">
+                <img :src="item.image" :alt="item.name" />
+                <div>
+                  <div class="cart-item-head">
+                    <strong>{{ item.name }}</strong>
+                    <strong>{{ format(item.total) }}</strong>
                   </div>
-                  <button class="text-button" type="button" @click="removeItem(item.id)">Remove</button>
+                  <p v-if="item.addOnLabels.length">{{ item.addOnLabels.join(" · ") }}</p>
+                  <p v-if="item.notes">{{ item.notes }}</p>
+                  <div class="cart-item-actions">
+                    <div class="quantity-control small">
+                      <button type="button" @click="changeQty(item.id, -1)">-</button>
+                      <span>{{ item.quantity }}</span>
+                      <button type="button" @click="changeQty(item.id, 1)">+</button>
+                    </div>
+                    <button class="text-button" type="button" @click="removeItem(item.id)">Remove</button>
+                  </div>
                 </div>
+              </article>
+            </div>
+
+            <div class="totals">
+              <div><span>{{ copy.subtotal }}</span><strong>{{ format(subtotal) }}</strong></div>
+              <div><span>{{ copy.deliveryFee }}</span><strong>{{ format(deliveryFee) }}</strong></div>
+              <div><span>{{ copy.total }}</span><strong>{{ format(grandTotal) }}</strong></div>
+            </div>
+
+            <div class="checkout-box" v-if="cart.length">
+              <div class="step-row">
+                <span :class="{ active: step === 1 }">1. {{ copy.step1 }}</span>
+                <span :class="{ active: step === 2 }">2. {{ copy.step2 }}</span>
+                <span :class="{ active: step === 3 }">3. {{ copy.step3 }}</span>
               </div>
-            </article>
-          </div>
 
-          <div class="totals">
-            <div><span>{{ copy.subtotal }}</span><strong>{{ format(subtotal) }}</strong></div>
-            <div><span>{{ copy.deliveryFee }}</span><strong>{{ format(deliveryFee) }}</strong></div>
-            <div><span>{{ copy.total }}</span><strong>{{ format(grandTotal) }}</strong></div>
-          </div>
+              <div v-if="step === 1" class="form-grid">
+                <label><span>{{ copy.name }}</span><input v-model="checkout.name" type="text" /></label>
+                <label><span>{{ copy.phone }}</span><input v-model="checkout.phone" type="tel" /></label>
+                <label><span>{{ copy.address }}</span><input v-model="checkout.address" type="text" /></label>
+              </div>
 
-          <div class="checkout-box" v-if="cart.length">
-            <div class="step-row">
-              <span :class="{ active: step === 1 }">1. {{ copy.step1 }}</span>
-              <span :class="{ active: step === 2 }">2. {{ copy.step2 }}</span>
-              <span :class="{ active: step === 3 }">3. {{ copy.step3 }}</span>
+              <div v-if="step === 2" class="form-grid">
+                <label><span>{{ copy.deliveryMethod }}</span>
+                  <select v-model="checkout.fulfillment">
+                    <option value="delivery">{{ copy.delivery }}</option>
+                    <option value="pickup">{{ copy.pickup }}</option>
+                  </select>
+                </label>
+                <label><span>{{ copy.time }}</span>
+                  <select v-model="checkout.time">
+                    <option :value="copy.asap">{{ copy.asap }}</option>
+                    <option :value="copy.tonight">{{ copy.tonight }}</option>
+                    <option :value="copy.later">{{ copy.later }}</option>
+                  </select>
+                </label>
+              </div>
+
+              <div v-if="step === 3" class="form-grid">
+                <label><span>{{ copy.paymentMethod }}</span>
+                  <select v-model="checkout.payment">
+                    <option value="stripe">{{ copy.stripe }}</option>
+                    <option value="cash">{{ copy.cash }}</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="checkout-actions">
+                <button v-if="step > 1" class="secondary-button" type="button" @click="step -= 1">Back</button>
+                <button v-if="step < 3" class="primary-button" type="button" @click="step += 1">{{ copy.checkout }}</button>
+                <button v-else class="primary-button" type="button" @click="placeOrder">{{ copy.placeOrder }}</button>
+              </div>
+
+              <p v-if="orderPlaced" class="success-note">Order placed. This is a clean demo flow ready for Stripe integration.</p>
             </div>
-
-            <div v-if="step === 1" class="form-grid">
-              <label><span>{{ copy.name }}</span><input v-model="checkout.name" type="text" /></label>
-              <label><span>{{ copy.phone }}</span><input v-model="checkout.phone" type="tel" /></label>
-              <label><span>{{ copy.address }}</span><input v-model="checkout.address" type="text" /></label>
-            </div>
-
-            <div v-if="step === 2" class="form-grid">
-              <label><span>{{ copy.deliveryMethod }}</span>
-                <select v-model="checkout.fulfillment">
-                  <option value="delivery">{{ copy.delivery }}</option>
-                  <option value="pickup">{{ copy.pickup }}</option>
-                </select>
-              </label>
-              <label><span>{{ copy.time }}</span>
-                <select v-model="checkout.time">
-                  <option :value="copy.asap">{{ copy.asap }}</option>
-                  <option :value="copy.tonight">{{ copy.tonight }}</option>
-                  <option :value="copy.later">{{ copy.later }}</option>
-                </select>
-              </label>
-            </div>
-
-            <div v-if="step === 3" class="form-grid">
-              <label><span>{{ copy.paymentMethod }}</span>
-                <select v-model="checkout.payment">
-                  <option value="stripe">{{ copy.stripe }}</option>
-                  <option value="cash">{{ copy.cash }}</option>
-                </select>
-              </label>
-            </div>
-
-            <div class="checkout-actions">
-              <button v-if="step > 1" class="secondary-button" type="button" @click="step -= 1">Back</button>
-              <button v-if="step < 3" class="primary-button" type="button" @click="step += 1">{{ copy.checkout }}</button>
-              <button v-else class="primary-button" type="button" @click="placeOrder">{{ copy.placeOrder }}</button>
-            </div>
-
-            <p v-if="orderPlaced" class="success-note">Order placed. This is a clean demo flow ready for Stripe integration.</p>
           </div>
         </div>
       </aside>
@@ -675,10 +677,14 @@ textarea {
   border-radius: 28px 0 0 28px;
 }
 .cart-body {
-  display: grid;
-  grid-template-rows: auto 1fr auto auto;
-  gap: 18px;
   height: 100%;
+  overflow: auto;
+  padding-right: 4px;
+}
+.cart-scroll {
+  display: grid;
+  gap: 18px;
+  min-height: 100%;
 }
 .cart-body h3 {
   margin: 0;
@@ -691,9 +697,10 @@ textarea {
   color: var(--muted);
 }
 .cart-items {
-  overflow: auto;
   display: grid;
   gap: 14px;
+  min-height: min(54vh, 560px);
+  align-content: start;
 }
 .cart-item {
   display: grid;
@@ -747,6 +754,7 @@ textarea {
   display: grid;
   gap: 14px;
   padding: 16px;
+  margin-top: 12px;
   border-radius: 20px;
   background: rgba(255,255,255,.04);
   border: 1px solid rgba(255,255,255,.08);
@@ -830,6 +838,9 @@ textarea {
   .cart-panel {
     width: 100%;
     border-radius: 0;
+  }
+  .cart-items {
+    min-height: 44vh;
   }
   .mobile-cart {
     display: flex;
