@@ -208,7 +208,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from "vue";
+import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue";
 import { formatPrice, getContent, getLocalizedProducts, normalizeLocale } from "@/data/site";
 
 const props = defineProps<{ lang?: string }>();
@@ -335,6 +335,18 @@ function removeItem(id: string) {
 function placeOrder() {
   orderPlaced.value = true;
 }
+
+function handleOpenCart() {
+  cartOpen.value = true;
+}
+
+onMounted(() => {
+  window.addEventListener("open-cart", handleOpenCart);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("open-cart", handleOpenCart);
+});
 
 watch([cartOpen, productOpen], ([cartState, productState]) => {
   document.documentElement.style.overflow = cartState || productState ? "hidden" : "";

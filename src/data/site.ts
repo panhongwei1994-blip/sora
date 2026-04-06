@@ -25,6 +25,7 @@ export const siteContent = {
     heroBody:
       "Premium Japanese cuisine crafted daily and delivered to your door",
     orderNow: "Order Now",
+    cartNav: "Cart",
     viewMenu: "View Menu",
     menuEyebrow: "Order Online",
     menuTitle: "High-converting sushi menu designed for fast orders",
@@ -118,6 +119,7 @@ export const siteContent = {
     heroBody:
       "Premium japanische Küche täglich frisch zubereitet und direkt zu dir geliefert",
     orderNow: "Jetzt bestellen",
+    cartNav: "Warenkorb",
     viewMenu: "Menü ansehen",
     menuEyebrow: "Online bestellen",
     menuTitle: "Sushi Menü mit Fokus auf schnelle Bestellungen",
@@ -211,6 +213,7 @@ export const siteContent = {
     heroBody:
       "Cocina japonesa premium elaborada a diario y entregada en tu puerta",
     orderNow: "Pedir ahora",
+    cartNav: "Carrito",
     viewMenu: "Ver menú",
     menuEyebrow: "Pedido online",
     menuTitle: "Menú diseñado para convertir visitas en pedidos",
@@ -304,6 +307,7 @@ export const siteContent = {
     heroBody:
       "Cuisine japonaise premium préparée chaque jour et livrée à votre porte",
     orderNow: "Commander",
+    cartNav: "Panier",
     viewMenu: "Voir le menu",
     menuEyebrow: "Commande en ligne",
     menuTitle: "Menu premium pensé pour la conversion",
@@ -397,6 +401,7 @@ export const siteContent = {
     heroBody:
       "Premium Japanse gerechten dagelijks vers bereid en bij je thuis bezorgd",
     orderNow: "Bestel nu",
+    cartNav: "Winkelwagen",
     viewMenu: "Bekijk menu",
     menuEyebrow: "Online bestellen",
     menuTitle: "Sushi menu gebouwd voor conversie",
