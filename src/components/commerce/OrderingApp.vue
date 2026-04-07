@@ -217,6 +217,10 @@
         <button class="close-button" type="button" @click="closeSuccessModal">×</button>
         <p class="eyebrow-inner">{{ copy.checkout }}</p>
         <h3>{{ successTitle }}</h3>
+        <div class="order-code-box">
+          <small>Order Code</small>
+          <strong>{{ orderCode }}</strong>
+        </div>
         <p class="success-modal-copy">{{ orderPlacedMessage }}</p>
         <button class="primary-button success-modal-button" type="button" @click="closeSuccessModal">
           Continue
@@ -254,6 +258,7 @@ const addOnIds = ref<string[]>([]);
 const notes = ref("");
 const step = ref(1);
 const orderPlaced = ref(false);
+const orderCode = ref("");
 const cart = ref<Array<{
   id: string;
   productId: string;
@@ -373,6 +378,7 @@ function removeItem(id: string) {
 
 function placeOrder() {
   if (!canPlaceOrder.value) return;
+  orderCode.value = generateOrderCode();
   orderPlaced.value = true;
   cart.value = [];
   cartOpen.value = false;
@@ -385,6 +391,12 @@ function handleOpenCart() {
 
 function closeSuccessModal() {
   orderPlaced.value = false;
+}
+
+function generateOrderCode() {
+  const prefix = checkout.fulfillment === "pickup" ? "PK" : "DL";
+  const random = Math.random().toString(36).slice(2, 8).toUpperCase();
+  return `${prefix}-${random}`;
 }
 
 onMounted(() => {
@@ -666,6 +678,29 @@ textarea {
   margin: 16px 0 0;
   color: var(--muted);
   line-height: 1.7;
+}
+.order-code-box {
+  margin-top: 18px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(212,165,74,.24);
+  background: rgba(212,165,74,.08);
+}
+.order-code-box small {
+  display: block;
+  margin-bottom: 8px;
+  color: rgba(244,213,154,.82);
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+.order-code-box strong {
+  display: block;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 1.2rem;
+  letter-spacing: .18em;
 }
 .success-modal-button {
   width: 100%;
