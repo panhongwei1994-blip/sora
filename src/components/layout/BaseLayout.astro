@@ -54,7 +54,9 @@ const canonical = lang === "en" ? "/" : `/${lang}`;
               ))}
             </div>
           </details>
-          <a href="#order-menu" class="header-order">{content.orderNow}</a>
+          <button type="button" class="header-order" onclick={`window.dispatchEvent(new CustomEvent('open-cart'))`}>
+            {content.cartNav}
+          </button>
         </div>
       </div>
     </header>
@@ -151,6 +153,7 @@ const canonical = lang === "en" ? "/" : `/${lang}`;
     color: var(--gold-soft);
   }
   .header-order {
+    border: 0;
     padding: 8px 13px;
     border-radius: 999px;
     background: linear-gradient(135deg, var(--gold), var(--gold-soft));
