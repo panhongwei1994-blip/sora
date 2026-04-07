@@ -148,7 +148,7 @@
             <div class="checkout-box" v-if="cart.length">
               <div class="step-row">
                 <span :class="{ active: step === 1 }">1. {{ copy.step1 }}</span>
-                <span :class="{ active: step === 2 }">2. {{ copy.step2 }} + {{ copy.step3 }}</span>
+                <span :class="{ active: step === 2 }">2. {{ copy.step2Short }}</span>
               </div>
 
               <div v-if="step === 1" class="form-grid">
@@ -883,7 +883,7 @@ textarea {
   }
   .cart-panel {
     width: 100%;
-    height: 60vh;
+    height: 75vh;
     margin-top: auto;
     border-radius: 28px 28px 0 0;
   }
