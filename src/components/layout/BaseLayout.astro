@@ -54,9 +54,6 @@ const canonical = lang === "en" ? "/" : `/${lang}`;
               ))}
             </div>
           </details>
-          <button type="button" class="header-ghost" onclick={`window.dispatchEvent(new CustomEvent('open-cart'))`}>
-            {content.cartNav}
-          </button>
           <a href="#order-menu" class="header-order">{content.orderNow}</a>
         </div>
       </div>
@@ -86,8 +83,7 @@ const canonical = lang === "en" ? "/" : `/${lang}`;
   .brand-mark,
   .locale-trigger,
   .locale-option,
-  .header-order,
-  .header-ghost {
+  .header-order {
     font-family: ui-sans-serif, system-ui, sans-serif;
     font-size: 12px;
     font-weight: 800;
@@ -99,13 +95,12 @@ const canonical = lang === "en" ? "/" : `/${lang}`;
   }
   .header-actions {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     align-items: center;
     flex-wrap: wrap;
   }
   .locale-menu,
-  .locale-trigger,
-  .header-ghost {
+  .locale-trigger {
     border-radius: 999px;
     color: rgba(246,239,230,.68);
   }
@@ -155,16 +150,13 @@ const canonical = lang === "en" ? "/" : `/${lang}`;
     background: rgba(212,165,74,.14);
     color: var(--gold-soft);
   }
-  .header-ghost {
-    border: 0;
-    border: 1px solid rgba(255,255,255,.08);
-    background: rgba(255,255,255,.03);
-  }
   .header-order {
-    padding: 10px 15px;
+    padding: 8px 13px;
     border-radius: 999px;
     background: linear-gradient(135deg, var(--gold), var(--gold-soft));
     color: #160f08;
+    font-size: 11px;
+    letter-spacing: .18em;
   }
   @media (max-width: 860px) {
     .header-shell {

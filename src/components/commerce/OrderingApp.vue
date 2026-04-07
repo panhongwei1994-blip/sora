@@ -159,28 +159,47 @@
               </div>
 
               <div v-if="step === 2" class="form-grid">
-                <label><span>{{ copy.deliveryMethod }}</span>
-                  <select v-model="checkout.fulfillment">
-                    <option value="delivery">{{ copy.delivery }}</option>
-                    <option value="pickup">{{ copy.pickup }}</option>
-                  </select>
-                </label>
-                <label><span>{{ copy.time }}</span>
-                  <select v-model="checkout.time">
-                    <option :value="copy.asap">{{ copy.asap }}</option>
-                    <option :value="copy.tonight">{{ copy.tonight }}</option>
-                    <option :value="copy.later">{{ copy.later }}</option>
-                  </select>
-                </label>
+                <div class="choice-group">
+                  <span>{{ copy.deliveryMethod }}</span>
+                  <div class="choice-row">
+                    <button
+                      type="button"
+                      :class="['choice-chip', { active: checkout.fulfillment === 'delivery' }]"
+                      @click="checkout.fulfillment = 'delivery'"
+                    >
+                      {{ copy.delivery }}
+                    </button>
+                    <button
+                      type="button"
+                      :class="['choice-chip', { active: checkout.fulfillment === 'pickup' }]"
+                      @click="checkout.fulfillment = 'pickup'"
+                    >
+                      {{ copy.pickup }}
+                    </button>
+                  </div>
+                </div>
               </div>
 
               <div v-if="step === 3" class="form-grid">
-                <label><span>{{ copy.paymentMethod }}</span>
-                  <select v-model="checkout.payment">
-                    <option value="stripe">{{ copy.stripe }}</option>
-                    <option value="cash">{{ copy.cash }}</option>
-                  </select>
-                </label>
+                <div class="choice-group">
+                  <span>{{ copy.paymentMethod }}</span>
+                  <div class="choice-row">
+                    <button
+                      type="button"
+                      :class="['choice-chip', { active: checkout.payment === 'stripe' }]"
+                      @click="checkout.payment = 'stripe'"
+                    >
+                      {{ copy.stripe }}
+                    </button>
+                    <button
+                      type="button"
+                      :class="['choice-chip', { active: checkout.payment === 'cash' }]"
+                      @click="checkout.payment = 'cash'"
+                    >
+                      {{ copy.cash }}
+                    </button>
+                  </div>
+                </div>
               </div>
 
               <div class="checkout-actions">
@@ -244,7 +263,6 @@ const checkout = reactive({
   phone: "",
   address: "",
   fulfillment: "delivery",
-  time: copy.asap,
   payment: "stripe",
 });
 
@@ -489,6 +507,7 @@ watch(
 .primary-button,
 .secondary-button,
 .addon-chip,
+.choice-chip,
 .text-button,
 .quantity-control button,
 input,
@@ -777,6 +796,40 @@ textarea {
   display: grid;
   gap: 8px;
 }
+.choice-group {
+  display: grid;
+  gap: 10px;
+}
+.choice-group span {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(244,213,154,.82);
+}
+.choice-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.choice-chip {
+  min-height: 52px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.1);
+  background: rgba(255,255,255,.04);
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.choice-chip.active {
+  background: rgba(212,165,74,.14);
+  border-color: rgba(212,165,74,.4);
+  color: var(--gold-soft);
+}
 .success-note {
   margin: 0;
   padding: 12px 14px;
@@ -811,6 +864,7 @@ textarea {
 @media (max-width: 760px) {
   .menu-grid,
   .addon-grid,
+  .choice-row,
   .product-actions,
   .checkout-actions {
     grid-template-columns: 1fr;
