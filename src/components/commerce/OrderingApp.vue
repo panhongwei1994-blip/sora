@@ -184,6 +184,7 @@
                   <span>{{ copy.paymentMethod }}</span>
                   <div class="choice-row">
                     <button
+                      v-if="checkout.fulfillment === 'delivery'"
                       type="button"
                       :class="['choice-chip', { active: checkout.payment === 'stripe' }]"
                       @click="checkout.payment = 'stripe'"
@@ -207,7 +208,7 @@
                 <button v-else class="primary-button" type="button" :disabled="!canPlaceOrder" @click="placeOrder">{{ copy.placeOrder }}</button>
               </div>
 
-              <p v-if="orderPlaced" class="success-note">Order placed. This is a clean demo flow ready for Stripe integration.</p>
+              <p v-if="orderPlaced" class="success-note">{{ orderPlacedMessage }}</p>
             </div>
           </div>
         </div>
@@ -274,9 +275,16 @@ const canContinueContact = computed(() => Boolean(checkout.name.trim() && checko
 const canPlaceOrder = computed(() => {
   const hasContact = canContinueContact.value;
   if (!hasContact) return false;
-  if (checkout.fulfillment === "pickup") return Boolean(checkout.payment);
+  if (checkout.fulfillment === "pickup") return checkout.payment === "cash";
   return Boolean(checkout.address.trim() && checkout.payment);
 });
+const orderPlacedMessage = computed(() =>
+  checkout.fulfillment === "pickup"
+    ? "Pickup order confirmed. Please pay in cash when you collect your order."
+    : checkout.payment === "cash"
+      ? "Delivery order confirmed. Please pay in cash on delivery."
+      : "Order placed. Your payment is ready for Stripe integration.",
+);
 const modalTotal = computed(() => {
   const addOnTotal = selected.value.addOns
     .filter((addOn) => addOnIds.value.includes(addOn.id))
@@ -393,6 +401,9 @@ watch(
   (value) => {
     if (value === "pickup") {
       checkout.address = "";
+      checkout.payment = "cash";
+    } else if (checkout.payment === "cash") {
+      checkout.payment = "stripe";
     }
   },
 );
