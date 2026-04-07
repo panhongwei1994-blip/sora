@@ -148,8 +148,7 @@
             <div class="checkout-box" v-if="cart.length">
               <div class="step-row">
                 <span :class="{ active: step === 1 }">1. {{ copy.step1 }}</span>
-                <span :class="{ active: step === 2 }">2. {{ copy.step2 }}</span>
-                <span :class="{ active: step === 3 }">3. {{ copy.step3 }}</span>
+                <span :class="{ active: step === 2 }">2. {{ copy.step2 }} + {{ copy.step3 }}</span>
               </div>
 
               <div v-if="step === 1" class="form-grid">
@@ -178,9 +177,6 @@
                     </button>
                   </div>
                 </div>
-              </div>
-
-              <div v-if="step === 3" class="form-grid">
                 <div class="choice-group">
                   <span>{{ copy.paymentMethod }}</span>
                   <div class="choice-row">
@@ -204,7 +200,7 @@
 
               <div class="checkout-actions">
                 <button v-if="step > 1" class="secondary-button" type="button" @click="step -= 1">Back</button>
-                <button v-if="step < 3" class="primary-button" type="button" @click="step += 1">{{ copy.checkout }}</button>
+                <button v-if="step < 2" class="primary-button" type="button" @click="step += 1">{{ copy.checkout }}</button>
                 <button v-else class="primary-button" type="button" @click="placeOrder">{{ copy.placeOrder }}</button>
               </div>
 
@@ -769,7 +765,7 @@ textarea {
 }
 .step-row {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 8px;
 }
 .step-row span {
@@ -887,7 +883,9 @@ textarea {
   }
   .cart-panel {
     width: 100%;
-    border-radius: 0;
+    height: 60vh;
+    margin-top: auto;
+    border-radius: 28px 28px 0 0;
   }
   .cart-items {
     min-height: 44vh;
