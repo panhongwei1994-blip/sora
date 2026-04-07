@@ -154,7 +154,6 @@
               <div v-if="step === 1" class="form-grid">
                 <label><span>{{ copy.name }}</span><input v-model="checkout.name" type="text" /></label>
                 <label><span>{{ copy.phone }}</span><input v-model="checkout.phone" type="tel" /></label>
-                <label><span>{{ copy.address }}</span><input v-model="checkout.address" type="text" /></label>
               </div>
 
               <div v-if="step === 2" class="form-grid">
@@ -177,6 +176,10 @@
                     </button>
                   </div>
                 </div>
+                <label v-if="checkout.fulfillment === 'delivery'">
+                  <span>{{ copy.address }}</span>
+                  <input v-model="checkout.address" type="text" />
+                </label>
                 <div class="choice-group">
                   <span>{{ copy.paymentMethod }}</span>
                   <div class="choice-row">
@@ -200,8 +203,8 @@
 
               <div class="checkout-actions">
                 <button v-if="step > 1" class="secondary-button" type="button" @click="step -= 1">Back</button>
-                <button v-if="step < 2" class="primary-button" type="button" @click="step += 1">{{ copy.checkout }}</button>
-                <button v-else class="primary-button" type="button" @click="placeOrder">{{ copy.placeOrder }}</button>
+                <button v-if="step < 2" class="primary-button" type="button" :disabled="!canContinueContact" @click="step += 1">{{ copy.checkout }}</button>
+                <button v-else class="primary-button" type="button" :disabled="!canPlaceOrder" @click="placeOrder">{{ copy.placeOrder }}</button>
               </div>
 
               <p v-if="orderPlaced" class="success-note">Order placed. This is a clean demo flow ready for Stripe integration.</p>
@@ -267,6 +270,13 @@ const subtotal = computed(() => cart.value.reduce((sum, item) => sum + item.tota
 const deliveryFee = computed(() => (cart.value.length ? (checkout.fulfillment === "pickup" ? 0 : 4.9) : 0));
 const grandTotal = computed(() => subtotal.value + deliveryFee.value);
 const itemCount = computed(() => cart.value.reduce((sum, item) => sum + item.quantity, 0));
+const canContinueContact = computed(() => Boolean(checkout.name.trim() && checkout.phone.trim()));
+const canPlaceOrder = computed(() => {
+  const hasContact = canContinueContact.value;
+  if (!hasContact) return false;
+  if (checkout.fulfillment === "pickup") return Boolean(checkout.payment);
+  return Boolean(checkout.address.trim() && checkout.payment);
+});
 const modalTotal = computed(() => {
   const addOnTotal = selected.value.addOns
     .filter((addOn) => addOnIds.value.includes(addOn.id))
@@ -340,6 +350,7 @@ function removeItem(id: string) {
 }
 
 function placeOrder() {
+  if (!canPlaceOrder.value) return;
   orderPlaced.value = true;
 }
 
@@ -375,6 +386,15 @@ watch(
     window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(value));
   },
   { deep: true },
+);
+
+watch(
+  () => checkout.fulfillment,
+  (value) => {
+    if (value === "pickup") {
+      checkout.address = "";
+    }
+  },
 );
 </script>
 
@@ -525,6 +545,13 @@ textarea {
   border: 0;
   background: linear-gradient(135deg, var(--gold), var(--gold-soft));
   color: #160f08;
+}
+.primary-button:disabled,
+.secondary-button:disabled,
+.choice-chip:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 .secondary-button {
   border: 1px solid rgba(255,255,255,.1);
