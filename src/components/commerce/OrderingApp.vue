@@ -88,12 +88,6 @@
             <label>{{ copy.notes }}</label>
             <textarea v-model="notes" :placeholder="copy.notesPlaceholder" rows="4"></textarea>
           </div>
-
-          <div class="modal-action-row">
-            <button class="primary-button modal-add-button" type="button" @click="addConfiguredItem">
-              {{ copy.addToCart }}
-            </button>
-          </div>
         </div>
 
         <div class="sticky-cta">
@@ -914,12 +908,6 @@ textarea {
   text-transform: uppercase;
   color: rgba(244,213,154,.82);
 }
-.modal-action-row {
-  display: none;
-}
-.modal-add-button {
-  width: 100%;
-}
 .quantity-control {
   display: inline-flex;
   align-items: center;
@@ -1212,9 +1200,6 @@ textarea {
   }
   #embedded-checkout {
     min-height: 78vh;
-  }
-  .modal-action-row {
-    display: block;
   }
   .cart-panel {
     width: 100%;
