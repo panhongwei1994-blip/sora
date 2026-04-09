@@ -146,75 +146,63 @@
             </div>
 
             <div class="checkout-box" v-if="cart.length">
-              <div class="step-row">
-                <template v-if="checkout.payment === 'cash'">
-                  <span :class="{ active: step === 1 }">1. {{ copy.step1 }}</span>
-                  <span :class="{ active: step === 2 }">2. {{ copy.step2Short }}</span>
-                </template>
-                <template v-else>
-                  <span class="active full-width">1. {{ copy.step2Short }}</span>
-                </template>
+              <div class="choice-group">
+                <span>{{ copy.deliveryMethod }}</span>
+                <div class="choice-row">
+                  <button
+                    type="button"
+                    :class="['choice-chip', { active: checkout.fulfillment === 'delivery' }]"
+                    @click="checkout.fulfillment = 'delivery'"
+                  >
+                    {{ copy.delivery }}
+                  </button>
+                  <button
+                    type="button"
+                    :class="['choice-chip', { active: checkout.fulfillment === 'pickup' }]"
+                    @click="checkout.fulfillment = 'pickup'"
+                  >
+                    {{ copy.pickup }}
+                  </button>
+                </div>
               </div>
 
-              <div v-if="checkout.payment === 'cash' && step === 1" class="form-grid">
+              <div class="choice-group">
+                <span>{{ copy.paymentMethod }}</span>
+                <div class="choice-row">
+                  <button
+                    type="button"
+                    :class="['choice-chip', { active: checkout.payment === 'stripe' }]"
+                    @click="checkout.payment = 'stripe'"
+                  >
+                    {{ copy.stripe }}
+                  </button>
+                  <button
+                    type="button"
+                    :class="['choice-chip', { active: checkout.payment === 'cash' }]"
+                    @click="checkout.payment = 'cash'"
+                  >
+                    {{ copy.cash }}
+                  </button>
+                </div>
+              </div>
+
+              <div v-if="checkout.payment === 'cash'" class="form-grid">
                 <label><span>{{ copy.name }}</span><input v-model="checkout.name" type="text" /></label>
                 <label><span>{{ copy.phone }}</span><input v-model="checkout.phone" type="tel" /></label>
-              </div>
-
-              <div v-if="checkout.payment === 'stripe' || step === 2" class="form-grid">
-                <div class="choice-group">
-                  <span>{{ copy.deliveryMethod }}</span>
-                  <div class="choice-row">
-                    <button
-                      type="button"
-                      :class="['choice-chip', { active: checkout.fulfillment === 'delivery' }]"
-                      @click="checkout.fulfillment = 'delivery'"
-                    >
-                      {{ copy.delivery }}
-                    </button>
-                    <button
-                      type="button"
-                      :class="['choice-chip', { active: checkout.fulfillment === 'pickup' }]"
-                      @click="checkout.fulfillment = 'pickup'"
-                    >
-                      {{ copy.pickup }}
-                    </button>
-                  </div>
-                </div>
-                <label v-if="checkout.payment === 'cash' && checkout.fulfillment === 'delivery'">
+                <label v-if="checkout.fulfillment === 'delivery'">
                   <span>{{ copy.address }}</span>
                   <input v-model="checkout.address" type="text" />
                 </label>
-                <div class="choice-group">
-                  <span>{{ copy.paymentMethod }}</span>
-                  <div class="choice-row">
-                    <button
-                      type="button"
-                      :class="['choice-chip', { active: checkout.payment === 'stripe' }]"
-                      @click="checkout.payment = 'stripe'"
-                    >
-                      {{ copy.stripe }}
-                    </button>
-                    <button
-                      type="button"
-                      :class="['choice-chip', { active: checkout.payment === 'cash' }]"
-                      @click="checkout.payment = 'cash'"
-                    >
-                      {{ copy.cash }}
-                    </button>
-                  </div>
-                </div>
-                <p v-if="checkout.payment === 'stripe'" class="helper-note">
-                  Stripe will collect your name, phone, and
-                  {{ checkout.fulfillment === "delivery" ? " delivery address" : " pickup details" }}
-                  in the payment step.
-                </p>
               </div>
 
+              <p v-else class="helper-note">
+                Stripe will collect your name, phone,
+                {{ checkout.fulfillment === "delivery" ? " and delivery address" : " and pickup details" }}
+                on the secure payment screen.
+              </p>
+
               <div class="checkout-actions">
-                <button v-if="checkout.payment === 'cash' && step > 1" class="secondary-button" type="button" @click="step -= 1">Back</button>
-                <button v-if="checkout.payment === 'cash' && step < 2" class="primary-button" type="button" :disabled="!canContinueContact" @click="step += 1">{{ copy.checkout }}</button>
-                <button v-else class="primary-button" type="button" :disabled="!canPlaceOrder || isSubmitting" @click="placeOrder">
+                <button class="primary-button checkout-submit" type="button" :disabled="!canPlaceOrder || isSubmitting" @click="placeOrder">
                   {{ isSubmitting ? "Loading payment..." : copy.placeOrder }}
                 </button>
               </div>
@@ -288,7 +276,6 @@ const selected = ref(products[0]);
 const qty = ref(1);
 const addOnIds = ref<string[]>([]);
 const notes = ref("");
-const step = ref(1);
 const orderPlaced = ref(false);
 const orderCode = ref("");
 const paymentError = ref("");
@@ -433,7 +420,6 @@ function placeOrder() {
   orderPlaced.value = true;
   cart.value = [];
   cartOpen.value = false;
-  step.value = 1;
 }
 
 function handleOpenCart() {
@@ -513,7 +499,6 @@ function handleEmbeddedCheckoutComplete() {
   orderPlaced.value = true;
   cart.value = [];
   cartOpen.value = false;
-  step.value = 1;
   paymentError.value = "";
 }
 
@@ -565,17 +550,6 @@ watch(
   },
 );
 
-watch(
-  () => checkout.payment,
-  (value) => {
-    if (value === "stripe") {
-      step.value = 2;
-    } else if (step.value > 2) {
-      step.value = 2;
-    }
-  },
-  { immediate: true },
-);
 </script>
 
 <style scoped>
@@ -1066,30 +1040,6 @@ textarea {
   background: rgba(255,255,255,.04);
   border: 1px solid rgba(255,255,255,.08);
 }
-.step-row {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-}
-.step-row span {
-  padding: 12px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,.08);
-  color: var(--muted);
-  text-align: center;
-  font-family: ui-sans-serif, system-ui, sans-serif;
-  font-size: 12px;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-}
-.step-row span.full-width {
-  grid-column: 1 / -1;
-}
-.step-row span.active {
-  color: var(--text);
-  background: rgba(212,165,74,.14);
-  border-color: rgba(212,165,74,.4);
-}
 .form-grid {
   display: grid;
   gap: 12px;
@@ -1131,6 +1081,9 @@ textarea {
   background: rgba(212,165,74,.14);
   border-color: rgba(212,165,74,.4);
   color: var(--gold-soft);
+}
+.checkout-submit {
+  grid-column: 1 / -1;
 }
 .helper-note {
   margin: 0;
