@@ -1120,6 +1120,10 @@ textarea {
   }
 }
 @media (max-width: 760px) {
+  .embedded-overlay {
+    place-items: end stretch;
+    padding: 0;
+  }
   .menu-grid,
   .addon-grid,
   .choice-row,
@@ -1141,8 +1145,8 @@ textarea {
     margin-top: 0;
   }
   .embedded-modal {
-    width: 100vw;
-    max-width: 100vw;
+    width: 100%;
+    max-width: 100%;
     max-height: 96vh;
     min-height: 88vh;
     padding: 18px 12px 12px;
