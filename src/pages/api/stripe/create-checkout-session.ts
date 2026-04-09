@@ -85,7 +85,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
     line_items: lineItems,
     customer_email: undefined,
     redirect_on_completion: "never",
-    billing_address_collection: payload.checkout.fulfillment === "delivery" ? "required" : "auto",
+    // Delivery address is already collected in the site checkout form.
+    // Keep Stripe focused on payment so customers are not asked twice.
+    billing_address_collection: "auto",
     metadata: {
       orderCode,
       customerName: payload.checkout.name,
