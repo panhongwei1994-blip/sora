@@ -35,7 +35,8 @@ const canonical = lang === "en" ? "/" : `/${lang}`;
     <header class="site-header">
       <div class="header-shell card">
         <a href={lang === "en" ? "/" : `/${lang}`} class="brand-mark">
-          {content.brand}
+          <img src="/sushi/logo.webp" alt="Sora Sushi Logo" class="brand-logo" />
+          <span>{content.brand}</span>
         </a>
         <div class="header-actions">
           <details class="locale-menu">
@@ -93,7 +94,18 @@ const canonical = lang === "en" ? "/" : `/${lang}`;
     text-transform: uppercase;
   }
   .brand-mark {
+    display: flex;
+    align-items: center;
+    gap: 12px;
     white-space: nowrap;
+    text-decoration: none;
+    color: var(--gold-soft);
+  }
+  .brand-logo {
+    height: 32px;
+    width: 32px;
+    object-fit: cover;
+    border-radius: 6px;
   }
   .header-actions {
     display: flex;
