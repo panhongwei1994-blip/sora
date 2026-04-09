@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import Stripe from "stripe";
+import { createOrder, getRuntimeEnv } from "@/lib/orders";
 
 export const prerender = false;
 
@@ -25,7 +26,7 @@ type CheckoutPayload = {
 };
 
 export const POST: APIRoute = async ({ request, locals }) => {
-  const runtimeEnv = (locals as { runtime?: { env?: Record<string, string> } }).runtime?.env;
+  const runtimeEnv = getRuntimeEnv(locals) as Record<string, unknown> | undefined;
   const stripeKey = runtimeEnv?.STRIPE_SECRET_KEY ?? import.meta.env.STRIPE_SECRET_KEY;
   const siteUrl = runtimeEnv?.PUBLIC_SITE_URL ?? import.meta.env.PUBLIC_SITE_URL;
 
@@ -49,7 +50,14 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   const stripe = new Stripe(stripeKey);
   const origin = siteUrl || new URL(request.url).origin;
-  const orderCode = `${payload.checkout.fulfillment === "pickup" ? "PK" : "DL"}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+  const order = await createOrder({
+    lang: payload.lang,
+    cart: payload.cart,
+    checkout: payload.checkout,
+    deliveryFee: payload.deliveryFee,
+    paymentMethod: "stripe",
+    runtimeEnv: runtimeEnv as never,
+  });
 
   const lineItems = payload.cart.map((item) => ({
     quantity: item.quantity,
@@ -95,7 +103,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
         }
       : undefined,
     metadata: {
-      orderCode,
+      orderId: order.id,
+      orderCode: order.orderCode,
       customerName: payload.checkout.name,
       customerPhone: payload.checkout.phone,
       fulfillment: payload.checkout.fulfillment,
@@ -108,7 +117,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
   return new Response(JSON.stringify({
     clientSecret: session.client_secret,
     publishableKey: runtimeEnv?.STRIPE_PUBLISHABLE_KEY ?? import.meta.env.STRIPE_PUBLISHABLE_KEY,
-    orderCode,
+    orderCode: order.orderCode,
   }), {
     status: 200,
     headers: { "Content-Type": "application/json" },

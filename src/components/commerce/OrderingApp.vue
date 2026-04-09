@@ -439,10 +439,7 @@ function placeOrder() {
     return;
   }
 
-  orderCode.value = generateOrderCode();
-  orderPlaced.value = true;
-  cart.value = [];
-  cartOpen.value = false;
+  void createCashOrder();
 }
 
 function handleOpenCart() {
@@ -451,12 +448,6 @@ function handleOpenCart() {
 
 function closeSuccessModal() {
   orderPlaced.value = false;
-}
-
-function generateOrderCode() {
-  const prefix = checkout.fulfillment === "pickup" ? "PK" : "DL";
-  const random = Math.random().toString(36).slice(2, 8).toUpperCase();
-  return `${prefix}-${random}`;
 }
 
 async function beginStripeCheckout() {
@@ -487,7 +478,7 @@ async function beginStripeCheckout() {
     }
 
     embeddedCheckoutOpen.value = true;
-    orderCode.value = data.orderCode ?? generateOrderCode();
+    orderCode.value = data.orderCode ?? "";
 
     await nextTick();
 
@@ -511,6 +502,39 @@ async function beginStripeCheckout() {
     embeddedCheckoutOpen.value = true;
   } finally {
     embeddedCheckoutLoading.value = false;
+    isSubmitting.value = false;
+  }
+}
+
+async function createCashOrder() {
+  isSubmitting.value = true;
+
+  try {
+    const response = await fetch("/api/orders/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        lang,
+        cart: cart.value,
+        checkout,
+        deliveryFee: deliveryFee.value,
+      }),
+    });
+
+    const data = await response.json();
+    if (!response.ok || !data.orderCode) {
+      throw new Error(data.error || "Unable to create order.");
+    }
+
+    orderCode.value = data.orderCode;
+    orderPlaced.value = true;
+    cart.value = [];
+    cartOpen.value = false;
+  } catch (error) {
+    paymentError.value = error instanceof Error ? error.message : "Unable to create order.";
+  } finally {
     isSubmitting.value = false;
   }
 }
