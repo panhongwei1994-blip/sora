@@ -27,6 +27,9 @@ export const siteContent = {
     orderNow: "Order Now",
     cartNav: "Cart",
     viewMenu: "View Menu",
+    addToHomeScreen: "Add to Home Screen",
+    installHintIos: "Tap Share, then Add to Home Screen.",
+    installHintGeneric: "Use your browser menu and choose Add to Home Screen or Install App.",
     menuEyebrow: "Order Online",
     menuTitle: "High-converting sushi menu designed for fast orders",
     menuBody:
@@ -123,6 +126,9 @@ export const siteContent = {
     orderNow: "Jetzt bestellen",
     cartNav: "Warenkorb",
     viewMenu: "Menü ansehen",
+    addToHomeScreen: "Zum Home-Bildschirm",
+    installHintIos: "Tippe auf Teilen und dann auf Zum Home-Bildschirm.",
+    installHintGeneric: "Nutze das Browsermenü und wähle Zum Home-Bildschirm oder App installieren.",
     menuEyebrow: "Online bestellen",
     menuTitle: "Sushi Menü mit Fokus auf schnelle Bestellungen",
     menuBody:
@@ -219,6 +225,9 @@ export const siteContent = {
     orderNow: "Pedir ahora",
     cartNav: "Carrito",
     viewMenu: "Ver menú",
+    addToHomeScreen: "Añadir a pantalla de inicio",
+    installHintIos: "Pulsa Compartir y luego Añadir a pantalla de inicio.",
+    installHintGeneric: "Usa el menú del navegador y elige Añadir a pantalla de inicio o Instalar app.",
     menuEyebrow: "Pedido online",
     menuTitle: "Menú diseñado para convertir visitas en pedidos",
     menuBody:
@@ -315,6 +324,9 @@ export const siteContent = {
     orderNow: "Commander",
     cartNav: "Panier",
     viewMenu: "Voir le menu",
+    addToHomeScreen: "Ajouter à l’écran d’accueil",
+    installHintIos: "Touchez Partager puis Ajouter à l’écran d’accueil.",
+    installHintGeneric: "Utilisez le menu du navigateur puis Ajouter à l’écran d’accueil ou Installer l’app.",
     menuEyebrow: "Commande en ligne",
     menuTitle: "Menu premium pensé pour la conversion",
     menuBody:
@@ -411,6 +423,9 @@ export const siteContent = {
     orderNow: "Bestel nu",
     cartNav: "Winkelwagen",
     viewMenu: "Bekijk menu",
+    addToHomeScreen: "Voeg toe aan beginscherm",
+    installHintIos: "Tik op Deel en daarna op Zet op beginscherm.",
+    installHintGeneric: "Gebruik het browsermenu en kies Zet op beginscherm of App installeren.",
     menuEyebrow: "Online bestellen",
     menuTitle: "Sushi menu gebouwd voor conversie",
     menuBody:

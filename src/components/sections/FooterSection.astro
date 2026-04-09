@@ -16,7 +16,15 @@ const content = getContent(lang);
       <p>{content.footerStory}</p>
       <div class="footer-cta-row">
         <a class="pill-button" href="#order-menu">{content.orderNow}</a>
-        <a class="ghost-button" href="#order-menu">{content.viewMenu}</a>
+        <button
+          class="ghost-button install-button"
+          type="button"
+          data-a2hs-trigger
+          data-install-ios-hint={content.installHintIos}
+          data-install-generic-hint={content.installHintGeneric}
+        >
+          {content.addToHomeScreen}
+        </button>
       </div>
     </div>
 

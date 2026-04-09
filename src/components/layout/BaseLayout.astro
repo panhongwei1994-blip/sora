@@ -28,7 +28,12 @@ const canonical = lang === "en" ? "/" : `/${lang}`;
     <meta name="twitter:title" content={content.metaTitle} />
     <meta name="twitter:description" content={content.metaDescription} />
     <meta name="theme-color" content="#07080c" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Sora Shushi" />
     <link rel="canonical" href={canonical} />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
   </head>
   <body>
@@ -62,6 +67,58 @@ const canonical = lang === "en" ? "/" : `/${lang}`;
       </div>
     </header>
     <slot />
+    <script is:inline>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("/sw.js").catch(() => {});
+        });
+      }
+
+      let deferredInstallPrompt = null;
+
+      window.addEventListener("beforeinstallprompt", (event) => {
+        event.preventDefault();
+        deferredInstallPrompt = event;
+      });
+
+      const isIosSafari = () => {
+        const ua = window.navigator.userAgent;
+        const isIOS = /iphone|ipad|ipod/i.test(ua);
+        const isSafari = /safari/i.test(ua) && !/crios|fxios|edgios/i.test(ua);
+        return isIOS && isSafari;
+      };
+
+      const isStandalone = () =>
+        window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+
+      const installApp = async (button) => {
+        if (isStandalone()) return;
+
+        if (deferredInstallPrompt) {
+          deferredInstallPrompt.prompt();
+          await deferredInstallPrompt.userChoice.catch(() => {});
+          deferredInstallPrompt = null;
+          return;
+        }
+
+        if (isIosSafari()) {
+          window.alert(button.dataset.installIosHint || "Tap Share, then Add to Home Screen.");
+          return;
+        }
+
+        window.alert(
+          button.dataset.installGenericHint ||
+            "Use your browser menu and choose Add to Home Screen or Install App.",
+        );
+      };
+
+      document.addEventListener("click", (event) => {
+        const trigger = event.target instanceof Element ? event.target.closest("[data-a2hs-trigger]") : null;
+        if (!(trigger instanceof HTMLButtonElement)) return;
+        event.preventDefault();
+        void installApp(trigger);
+      });
+    </script>
   </body>
 </html>
 
