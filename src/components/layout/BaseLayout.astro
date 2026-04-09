@@ -67,6 +67,18 @@ const canonical = lang === "en" ? "/" : `/${lang}`;
       </div>
     </header>
     <slot />
+    <div class="install-modal" id="install-modal" hidden>
+      <div class="install-backdrop" data-install-close></div>
+      <div class="install-dialog card" role="dialog" aria-modal="true" aria-labelledby="install-title">
+        <button class="install-close" type="button" data-install-close aria-label="Close">×</button>
+        <img src="/sushi/logo.webp" alt="Sora Shushi" class="install-logo" />
+        <p class="eyebrow">Sora Shushi</p>
+        <h3 id="install-title">Add to your home screen</h3>
+        <p class="install-copy" id="install-copy"></p>
+        <div class="install-steps" id="install-steps"></div>
+        <button class="primary-button install-confirm" type="button" data-install-close>Close</button>
+      </div>
+    </div>
     <script is:inline>
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
@@ -91,7 +103,39 @@ const canonical = lang === "en" ? "/" : `/${lang}`;
       const isStandalone = () =>
         window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
 
-      const installApp = async (button) => {
+      const modal = document.getElementById("install-modal");
+      const copyNode = document.getElementById("install-copy");
+      const stepsNode = document.getElementById("install-steps");
+
+      const showInstallModal = (variant) => {
+        if (!(modal instanceof HTMLElement) || !(copyNode instanceof HTMLElement) || !(stepsNode instanceof HTMLElement)) return;
+
+        const ios = variant === "ios";
+        copyNode.textContent = ios
+          ? "Install Sora Shushi to open it like an app from your iPhone home screen."
+          : "Install Sora Shushi for faster access from your device home screen.";
+        stepsNode.innerHTML = ios
+          ? `
+            <div class="install-step"><span>1</span><p>Tap the Share button in Safari.</p></div>
+            <div class="install-step"><span>2</span><p>Select Add to Home Screen.</p></div>
+            <div class="install-step"><span>3</span><p>Save it as Sora Shushi.</p></div>
+          `
+          : `
+            <div class="install-step"><span>1</span><p>Open your browser menu.</p></div>
+            <div class="install-step"><span>2</span><p>Choose Install App or Add to Home Screen.</p></div>
+            <div class="install-step"><span>3</span><p>Save it as Sora Shushi.</p></div>
+          `;
+        modal.hidden = false;
+        document.documentElement.style.overflow = "hidden";
+      };
+
+      const closeInstallModal = () => {
+        if (!(modal instanceof HTMLElement)) return;
+        modal.hidden = true;
+        document.documentElement.style.overflow = "";
+      };
+
+      const installApp = async () => {
         if (isStandalone()) return;
 
         if (deferredInstallPrompt) {
@@ -102,21 +146,25 @@ const canonical = lang === "en" ? "/" : `/${lang}`;
         }
 
         if (isIosSafari()) {
-          window.alert(button.dataset.installIosHint || "Tap Share, then Add to Home Screen.");
+          showInstallModal("ios");
           return;
         }
 
-        window.alert(
-          button.dataset.installGenericHint ||
-            "Use your browser menu and choose Add to Home Screen or Install App.",
-        );
+        showInstallModal("generic");
       };
 
       document.addEventListener("click", (event) => {
         const trigger = event.target instanceof Element ? event.target.closest("[data-a2hs-trigger]") : null;
         if (!(trigger instanceof HTMLButtonElement)) return;
         event.preventDefault();
-        void installApp(trigger);
+        void installApp();
+      });
+
+      document.addEventListener("click", (event) => {
+        const closeTrigger = event.target instanceof Element ? event.target.closest("[data-install-close]") : null;
+        if (!closeTrigger) return;
+        event.preventDefault();
+        closeInstallModal();
       });
     </script>
   </body>
@@ -232,6 +280,94 @@ const canonical = lang === "en" ? "/" : `/${lang}`;
     font-size: 11px;
     letter-spacing: .18em;
   }
+  .install-modal[hidden] {
+    display: none;
+  }
+  .install-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+  }
+  .install-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(5, 6, 10, .78);
+    backdrop-filter: blur(12px);
+  }
+  .install-dialog {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: min(420px, calc(100vw - 24px));
+    padding: 28px;
+    text-align: center;
+  }
+  .install-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 999px;
+    background: rgba(255,255,255,.05);
+    color: var(--text);
+  }
+  .install-logo {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    object-fit: cover;
+    border: 1px solid rgba(212,165,74,.28);
+    box-shadow: 0 10px 24px rgba(212,165,74,.2);
+  }
+  .install-dialog h3 {
+    margin: 12px 0 0;
+    font-size: 2rem;
+  }
+  .install-copy {
+    margin: 14px 0 0;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .install-steps {
+    display: grid;
+    gap: 10px;
+    margin-top: 20px;
+    text-align: left;
+  }
+  .install-step {
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    gap: 12px;
+    align-items: start;
+    padding: 12px 14px;
+    border-radius: 18px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+  }
+  .install-step span {
+    display: inline-grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    background: rgba(212,165,74,.14);
+    color: var(--gold-soft);
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .install-step p {
+    margin: 2px 0 0;
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .install-confirm {
+    width: 100%;
+    margin-top: 18px;
+  }
   @media (max-width: 860px) {
     .header-shell {
       flex-direction: row;
@@ -266,6 +402,14 @@ const canonical = lang === "en" ? "/" : `/${lang}`;
     }
     .header-order {
       padding: 8px 12px;
+    }
+    .install-dialog {
+      width: calc(100vw - 16px);
+      padding: 24px 18px 18px;
+      top: auto;
+      bottom: 8px;
+      transform: translateX(-50%);
+      border-radius: 24px;
     }
   }
 </style>
