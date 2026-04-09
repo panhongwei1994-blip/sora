@@ -106,32 +106,6 @@ const canonical = lang === "en" ? "/" : `/${lang}`;
       const modal = document.getElementById("install-modal");
       const copyNode = document.getElementById("install-copy");
       const stepsNode = document.getElementById("install-steps");
-      const shareIcon = `
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 16V4" />
-          <path d="M8 8l4-4 4 4" />
-          <path d="M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" />
-        </svg>
-      `;
-      const plusIcon = `
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 5v14" />
-          <path d="M5 12h14" />
-        </svg>
-      `;
-      const homeIcon = `
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 10.5 12 3l9 7.5" />
-          <path d="M5 9.5V20h14V9.5" />
-        </svg>
-      `;
-      const menuIcon = `
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 7h16" />
-          <path d="M4 12h16" />
-          <path d="M4 17h16" />
-        </svg>
-      `;
 
       const showInstallModal = (variant) => {
         if (!(modal instanceof HTMLElement) || !(copyNode instanceof HTMLElement) || !(stepsNode instanceof HTMLElement)) return;
@@ -142,14 +116,14 @@ const canonical = lang === "en" ? "/" : `/${lang}`;
           : "Install Sora Shushi for faster access from your device home screen.";
         stepsNode.innerHTML = ios
           ? `
-            <div class="install-step"><span class="install-step-icon">${shareIcon}</span><p>Tap the Share button in Safari.</p></div>
-            <div class="install-step"><span class="install-step-icon">${plusIcon}</span><p>Select Add to Home Screen.</p></div>
-            <div class="install-step"><span class="install-step-icon">${homeIcon}</span><p>Save it as Sora Shushi.</p></div>
+            <div class="install-step"><span class="install-step-number">1</span><p>Tap the Share button in Safari.</p></div>
+            <div class="install-step"><span class="install-step-number">2</span><p>Select Add to Home Screen.</p></div>
+            <div class="install-step"><span class="install-step-number">3</span><p>Save it as Sora Shushi.</p></div>
           `
           : `
-            <div class="install-step"><span class="install-step-icon">${menuIcon}</span><p>Open your browser menu.</p></div>
-            <div class="install-step"><span class="install-step-icon">${plusIcon}</span><p>Choose Install App or Add to Home Screen.</p></div>
-            <div class="install-step"><span class="install-step-icon">${homeIcon}</span><p>Save it as Sora Shushi.</p></div>
+            <div class="install-step"><span class="install-step-number">1</span><p>Open your browser menu.</p></div>
+            <div class="install-step"><span class="install-step-number">2</span><p>Choose Install App or Add to Home Screen.</p></div>
+            <div class="install-step"><span class="install-step-number">3</span><p>Save it as Sora Shushi.</p></div>
           `;
         modal.hidden = false;
         document.documentElement.style.overflow = "hidden";
@@ -373,16 +347,17 @@ const canonical = lang === "en" ? "/" : `/${lang}`;
     background: rgba(255,255,255,.04);
     border: 1px solid rgba(255,255,255,.08);
   }
-  .install-step-icon {
+  .install-step-number {
     display: inline-grid;
     place-items: center;
-    width: 16px;
-    height: 16px;
-    color: rgba(244,213,154,.82);
-  }
-  .install-step-icon svg {
-    width: 14px;
-    height: 14px;
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    background: rgba(212,165,74,.14);
+    color: var(--gold-soft);
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
   }
   .install-step p {
     margin: 2px 0 0;
