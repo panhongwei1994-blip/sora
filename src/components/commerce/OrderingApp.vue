@@ -236,7 +236,7 @@
       </aside>
     </div>
 
-    <div v-if="orderPlaced" class="overlay" @click.self="closeSuccessModal">
+    <div v-if="orderPlaced" class="overlay success-overlay" @click.self="closeSuccessModal">
       <div class="success-modal card">
         <button class="close-button" type="button" @click="closeSuccessModal">×</button>
         <p class="eyebrow-inner">{{ copy.checkout }}</p>
@@ -539,14 +539,18 @@ async function createCashOrder() {
   }
 }
 
-function handleEmbeddedCheckoutComplete() {
+async function handleEmbeddedCheckoutComplete() {
   embeddedCheckoutInstance?.destroy?.();
   embeddedCheckoutInstance = null;
   embeddedCheckoutOpen.value = false;
+  embeddedCheckoutLoading.value = false;
+  paymentError.value = "";
+
+  await nextTick();
+
   orderPlaced.value = true;
   cart.value = [];
   cartOpen.value = false;
-  paymentError.value = "";
 }
 
 function closeEmbeddedCheckout() {
@@ -774,6 +778,9 @@ textarea {
 }
 .embedded-overlay {
   z-index: 60;
+}
+.success-overlay {
+  z-index: 70;
 }
 .cart-overlay {
   place-items: stretch end;
