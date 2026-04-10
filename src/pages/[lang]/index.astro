@@ -5,11 +5,6 @@ import FutureSection from "@/components/sections/FutureSection.astro";
 import ReviewsSection from "@/components/sections/ReviewsSection.astro";
 import FooterSection from "@/components/sections/FooterSection.astro";
 import OrderingApp from "@/components/commerce/OrderingApp.vue";
-import { locales } from "@/data/site";
-
-export function getStaticPaths() {
-  return locales.filter((lang) => lang !== "en").map((lang) => ({ params: { lang } }));
-}
 
 const { lang } = Astro.params;
 ---

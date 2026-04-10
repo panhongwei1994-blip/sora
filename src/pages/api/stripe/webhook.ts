@@ -5,7 +5,7 @@ import { getRuntimeEnv, updateOrder } from "@/lib/orders";
 export const prerender = false;
 
 export const POST: APIRoute = async ({ request, locals }) => {
-  const runtimeEnv = getRuntimeEnv(locals) as Record<string, string> | undefined;
+  const runtimeEnv = getRuntimeEnv(locals);
   const stripeKey = runtimeEnv?.STRIPE_SECRET_KEY ?? import.meta.env.STRIPE_SECRET_KEY;
   const webhookSecret = runtimeEnv?.STRIPE_WEBHOOK_SECRET ?? import.meta.env.STRIPE_WEBHOOK_SECRET;
   const signature = request.headers.get("stripe-signature");
@@ -55,7 +55,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
                   .join(", ")
               : current.address,
         }),
-        runtimeEnv as never,
+        runtimeEnv,
       );
     }
   }
@@ -73,7 +73,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
           paymentStatus: "failed",
           stripeSessionId: session.id,
         }),
-        runtimeEnv as never,
+        runtimeEnv,
       );
     }
   }

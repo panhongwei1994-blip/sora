@@ -41,11 +41,15 @@ export type OrderRecord = {
   updatedAt: string;
 };
 
-type RuntimeEnv = {
+export type RuntimeEnv = {
   ORDERS?: {
     get(key: string, type?: "json"): Promise<unknown>;
     put(key: string, value: string): Promise<void>;
   };
+  STRIPE_SECRET_KEY?: string;
+  STRIPE_PUBLISHABLE_KEY?: string;
+  PUBLIC_SITE_URL?: string;
+  STRIPE_WEBHOOK_SECRET?: string;
 };
 
 const devOrderStore = new Map<string, OrderRecord>();
@@ -64,15 +68,15 @@ export function generateOrderCode(fulfillment: CheckoutPayload["fulfillment"]) {
   return `${prefix}-${random}`;
 }
 
-export function generateOrderId() {
+function generateOrderId() {
   return `order_${crypto.randomUUID()}`;
 }
 
-export function calculateSubtotal(items: CartItemPayload[]) {
+function calculateSubtotal(items: CartItemPayload[]) {
   return items.reduce((sum, item) => sum + item.total, 0);
 }
 
-export async function saveOrder(order: OrderRecord, runtimeEnv?: RuntimeEnv) {
+async function saveOrder(order: OrderRecord, runtimeEnv?: RuntimeEnv) {
   const orders = getOrdersBinding(runtimeEnv);
   if (orders) {
     await orders.put(`order:${order.orderCode}`, JSON.stringify(order));

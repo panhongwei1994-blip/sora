@@ -26,7 +26,7 @@ type CheckoutPayload = {
 };
 
 export const POST: APIRoute = async ({ request, locals }) => {
-  const runtimeEnv = getRuntimeEnv(locals) as Record<string, unknown> | undefined;
+  const runtimeEnv = getRuntimeEnv(locals);
   const stripeKey = runtimeEnv?.STRIPE_SECRET_KEY ?? import.meta.env.STRIPE_SECRET_KEY;
   const siteUrl = runtimeEnv?.PUBLIC_SITE_URL ?? import.meta.env.PUBLIC_SITE_URL;
 
@@ -56,7 +56,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     checkout: payload.checkout,
     deliveryFee: payload.deliveryFee,
     paymentMethod: "stripe",
-    runtimeEnv: runtimeEnv as never,
+    runtimeEnv,
   });
 
   const lineItems = payload.cart.map((item) => ({
