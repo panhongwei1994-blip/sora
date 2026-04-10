@@ -792,13 +792,13 @@ export function getLocaleUrls(current: Locale) {
   }));
 }
 
-export function getRestaurantSchema(lang?: string) {
+export function getRestaurantSchema(siteUrl: string, lang?: string) {
   const content = getContent(lang);
   return {
     "@context": "https://schema.org",
     "@type": "Restaurant",
     name: content.brand,
-    image: ["https://sora-sushi.example.com/sushi/hero.png"],
+    image: [new URL("/sushi/hero.png", siteUrl).toString()],
     servesCuisine: ["Japanese", "Sushi"],
     priceRange: "$$$",
     telephone: "+1 (415) 555-0142",

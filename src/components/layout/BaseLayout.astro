@@ -9,8 +9,11 @@ interface Props {
 const lang = normalizeLocale(Astro.props.lang);
 const content = getContent(lang);
 const localeUrls = getLocaleUrls(lang);
-const schema = getRestaurantSchema(lang);
-const canonical = lang === "en" ? "/" : `/${lang}`;
+const siteUrl = Astro.site ?? new URL("https://sora-site.panhongwei1994.workers.dev");
+const canonicalPath = lang === "en" ? "/" : `/${lang}`;
+const canonical = new URL(canonicalPath, siteUrl).toString();
+const socialImage = new URL("/sushi/hero.png", siteUrl).toString();
+const schema = getRestaurantSchema(siteUrl.toString(), lang);
 ---
 
 <!doctype html>
@@ -23,7 +26,7 @@ const canonical = lang === "en" ? "/" : `/${lang}`;
     <meta property="og:title" content={content.metaTitle} />
     <meta property="og:description" content={content.metaDescription} />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="/sushi/hero.png" />
+    <meta property="og:image" content={socialImage} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={content.metaTitle} />
     <meta name="twitter:description" content={content.metaDescription} />

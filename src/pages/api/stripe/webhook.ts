@@ -4,10 +4,14 @@ import { getRuntimeEnv, updateOrder } from "@/lib/orders";
 
 export const prerender = false;
 
+function cleanString(value?: string) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
 export const POST: APIRoute = async ({ request, locals }) => {
   const runtimeEnv = getRuntimeEnv(locals);
-  const stripeKey = runtimeEnv?.STRIPE_SECRET_KEY ?? import.meta.env.STRIPE_SECRET_KEY;
-  const webhookSecret = runtimeEnv?.STRIPE_WEBHOOK_SECRET ?? import.meta.env.STRIPE_WEBHOOK_SECRET;
+  const stripeKey = cleanString(runtimeEnv?.STRIPE_SECRET_KEY ?? import.meta.env.STRIPE_SECRET_KEY);
+  const webhookSecret = cleanString(runtimeEnv?.STRIPE_WEBHOOK_SECRET ?? import.meta.env.STRIPE_WEBHOOK_SECRET);
   const signature = request.headers.get("stripe-signature");
 
   if (!stripeKey || !webhookSecret || !signature) {
