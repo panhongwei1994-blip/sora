@@ -4,6 +4,10 @@ import { createOrder, getRuntimeEnv } from "@/lib/orders";
 
 export const prerender = false;
 
+function cleanString(value?: string) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
 type CheckoutPayload = {
   lang?: string;
   cart: Array<{
@@ -27,13 +31,26 @@ type CheckoutPayload = {
 
 export const POST: APIRoute = async ({ request, locals }) => {
   const runtimeEnv = getRuntimeEnv(locals);
-  const stripeKey = runtimeEnv?.STRIPE_SECRET_KEY ?? import.meta.env.STRIPE_SECRET_KEY;
-  const siteUrl = runtimeEnv?.PUBLIC_SITE_URL ?? import.meta.env.PUBLIC_SITE_URL;
+  const stripeKey = cleanString(runtimeEnv?.STRIPE_SECRET_KEY ?? import.meta.env.STRIPE_SECRET_KEY);
+  const siteUrl = cleanString(runtimeEnv?.PUBLIC_SITE_URL ?? import.meta.env.PUBLIC_SITE_URL);
+  const publishableKey = cleanString(
+    runtimeEnv?.STRIPE_PUBLISHABLE_KEY ?? import.meta.env.STRIPE_PUBLISHABLE_KEY,
+  );
 
   if (!stripeKey) {
     return new Response(JSON.stringify({
       error:
-        "Stripe key missing. Add STRIPE_SECRET_KEY in your Cloudflare Pages Variables and Secrets, then redeploy.",
+        "Stripe key missing. Add STRIPE_SECRET_KEY in your Cloudflare Workers variables, then redeploy.",
+    }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  if (!publishableKey) {
+    return new Response(JSON.stringify({
+      error:
+        "Stripe publishable key missing. Add STRIPE_PUBLISHABLE_KEY in your Cloudflare Workers variables, then redeploy.",
     }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
@@ -114,9 +131,19 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   const session = await stripe.checkout.sessions.create(sessionParams as never);
 
+  const clientSecret = cleanString(session.client_secret ?? "");
+  if (!clientSecret) {
+    return new Response(JSON.stringify({
+      error: "Stripe did not return a checkout client secret. Try redeploying the Worker and retrying payment.",
+    }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   return new Response(JSON.stringify({
-    clientSecret: session.client_secret,
-    publishableKey: runtimeEnv?.STRIPE_PUBLISHABLE_KEY ?? import.meta.env.STRIPE_PUBLISHABLE_KEY,
+    clientSecret,
+    publishableKey,
     orderCode: order.orderCode,
   }), {
     status: 200,

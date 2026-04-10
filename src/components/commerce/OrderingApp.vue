@@ -474,11 +474,22 @@ async function beginStripeCheckout() {
     });
 
     const data = await response.json();
-    if (!response.ok || !data.clientSecret || !data.publishableKey) {
+    const publishableKey = typeof data.publishableKey === "string" ? data.publishableKey.trim() : "";
+    const clientSecret = typeof data.clientSecret === "string" ? data.clientSecret.trim() : "";
+
+    if (!response.ok || !clientSecret || !publishableKey) {
       throw new Error(
         data.error ||
-          "Unable to start Stripe checkout. Check your Cloudflare Pages Stripe environment variables.",
+          "Unable to start Stripe checkout. Check your Cloudflare Workers Stripe variables.",
       );
+    }
+
+    if (!publishableKey.startsWith("pk_")) {
+      throw new Error("Stripe publishable key is invalid. Recheck STRIPE_PUBLISHABLE_KEY in your Worker variables.");
+    }
+
+    if (!clientSecret.startsWith("cs_")) {
+      throw new Error("Stripe checkout session is invalid. Recreate the session and try again.");
     }
 
     embeddedCheckoutOpen.value = true;
@@ -486,14 +497,14 @@ async function beginStripeCheckout() {
 
     await nextTick();
 
-    const stripe = await loadStripe(data.publishableKey);
+    const stripe = await loadStripe(publishableKey);
     if (!stripe) {
       throw new Error("Unable to load Stripe checkout.");
     }
 
     embeddedCheckoutInstance?.destroy?.();
     embeddedCheckoutInstance = await stripe.createEmbeddedCheckoutPage({
-      clientSecret: data.clientSecret,
+      clientSecret,
       onComplete: handleEmbeddedCheckoutComplete,
     });
 
@@ -502,7 +513,7 @@ async function beginStripeCheckout() {
     paymentError.value =
       error instanceof Error
         ? error.message
-        : "Unable to start Stripe checkout. Check your Cloudflare Pages Stripe environment variables.";
+        : "Unable to start Stripe checkout. Check your Cloudflare Workers Stripe variables.";
     embeddedCheckoutOpen.value = true;
   } finally {
     embeddedCheckoutLoading.value = false;
