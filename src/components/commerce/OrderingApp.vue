@@ -254,14 +254,18 @@
 
     <div v-if="embeddedCheckoutOpen" class="overlay embedded-overlay" @click.self="closeEmbeddedCheckout">
       <div class="embedded-modal card">
-        <button class="close-button" type="button" @click="closeEmbeddedCheckout">×</button>
-        <p class="eyebrow-inner">{{ copy.checkout }}</p>
+        <div class="embedded-handle" aria-hidden="true"></div>
+        <button class="close-button embedded-close" type="button" @click="closeEmbeddedCheckout">×</button>
+        <div class="embedded-topline">
+          <p class="eyebrow-inner embedded-kicker">{{ copy.checkout }}</p>
+          <span v-if="orderCode" class="embedded-code">{{ orderCode }}</span>
+        </div>
         <div class="embedded-head">
-          <div>
+          <div class="embedded-copy">
             <h3>Secure Payment</h3>
-            <p>Complete your Stripe payment without leaving the page.</p>
+            <p>Review the final amount and complete payment in the secure Stripe sheet.</p>
           </div>
-          <strong>{{ format(grandTotal) }}</strong>
+          <strong class="embedded-total">{{ format(grandTotal) }}</strong>
         </div>
         <div v-if="embeddedCheckoutLoading" class="embedded-state">Loading Stripe checkout…</div>
         <div v-else-if="paymentError" class="embedded-state error-note">{{ paymentError }}</div>
@@ -791,30 +795,82 @@ textarea {
   width: min(1080px, calc(100vw - 24px));
   max-height: min(96vh, 1040px);
   overflow: auto;
-  padding: 28px 28px 24px;
+  padding: 18px 28px 24px;
   box-sizing: border-box;
+  border-radius: 28px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.02)),
+    rgba(9,11,17,.96);
+  box-shadow: 0 32px 80px rgba(0,0,0,.42);
+}
+.embedded-handle {
+  width: 56px;
+  height: 5px;
+  margin: 0 auto 16px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.14);
+}
+.embedded-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.embedded-kicker {
+  margin: 0;
+}
+.embedded-code {
+  flex-shrink: 0;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(212,165,74,.22);
+  background: rgba(212,165,74,.08);
+  color: rgba(244,213,154,.9);
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.embedded-close {
+  top: 18px;
+  right: 18px;
+  width: 40px;
+  height: 40px;
+  background: rgba(255,255,255,.06);
+  backdrop-filter: blur(10px);
 }
 .embedded-head {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
 }
 .embedded-head h3 {
   margin: 0;
-  font-size: 2rem;
+  font-size: clamp(1.65rem, 3.4vw, 2.2rem);
+  letter-spacing: -.03em;
 }
 .embedded-head p {
-  margin: 10px 0 0;
+  margin: 8px 0 0;
   color: var(--muted);
-  line-height: 1.7;
+  line-height: 1.65;
+  max-width: 34rem;
 }
-.embedded-head strong {
+.embedded-copy {
+  min-width: 0;
+}
+.embedded-total {
   white-space: nowrap;
-  padding: 10px 14px;
-  border-radius: 16px;
-  background: rgba(255,255,255,.06);
+  padding: 12px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(212,165,74,.18);
+  background: rgba(255,255,255,.05);
+  font-size: 1.05rem;
 }
 .embedded-state {
   min-height: 240px;
@@ -1217,17 +1273,31 @@ textarea {
     max-width: 100%;
     max-height: 96vh;
     min-height: 88vh;
-    padding: 18px 12px 12px;
-    border-radius: 22px 22px 0 0;
+    padding: 10px 12px 12px;
+    border-radius: 24px 24px 0 0;
     margin: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
   }
   .embedded-head {
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
     margin-bottom: 14px;
   }
   .embedded-head h3 {
     font-size: 1.35rem;
+  }
+  .embedded-topline {
+    align-items: flex-start;
+    padding-right: 52px;
+  }
+  .embedded-code {
+    font-size: 10px;
+    padding: 7px 10px;
+  }
+  .embedded-total {
+    width: 100%;
+    text-align: center;
   }
   #embedded-checkout {
     min-height: 78vh;
