@@ -1,5 +1,5 @@
 {
-  "name": "ramen",
+  "name": "sora-site",
   "compatibility_date": "2026-04-10",
   "compatibility_flags": ["nodejs_compat"],
   // Add real KV namespace IDs before relying on persistent sessions/orders in production.
