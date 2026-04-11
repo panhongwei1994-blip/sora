@@ -70,12 +70,12 @@ const schema = getRestaurantSchema(siteUrl.toString(), lang);
       </div>
     </header>
     <slot />
-    <div class="install-modal" id="install-modal" hidden>
+    <div class="install-modal" id="install-modal" data-brand={content.brand} hidden>
       <div class="install-backdrop" data-install-close></div>
       <div class="install-dialog card" role="dialog" aria-modal="true" aria-labelledby="install-title">
         <button class="install-close" type="button" data-install-close aria-label="Close">×</button>
-        <img src="/sushi/logo.webp" alt="Sora Sushi" class="install-logo" />
-        <p class="eyebrow">Sora Sushi</p>
+        <img src="/sushi/logo.webp" alt={content.brand} class="install-logo" />
+        <p class="eyebrow">{content.brand}</p>
         <h3 id="install-title">Add to your home screen</h3>
         <p class="install-copy" id="install-copy"></p>
         <div class="install-steps" id="install-steps"></div>
@@ -114,19 +114,70 @@ const schema = getRestaurantSchema(siteUrl.toString(), lang);
         if (!(modal instanceof HTMLElement) || !(copyNode instanceof HTMLElement) || !(stepsNode instanceof HTMLElement)) return;
 
         const ios = variant === "ios";
+        const brandName = modal.dataset.brand || "Sora Sushi";
         copyNode.textContent = ios
-          ? "Install Sora Sushi to open it like an app from your iPhone home screen."
-          : "Install Sora Sushi for faster access from your device home screen.";
+          ? `Install ${brandName} to open it like an app from your iPhone home screen.`
+          : `Install ${brandName} for faster access from your device home screen.`;
         stepsNode.innerHTML = ios
           ? `
-            <div class="install-step"><span class="install-step-number">1</span><p>Tap the Share button in Safari.</p></div>
-            <div class="install-step"><span class="install-step-number">2</span><p>Select Add to Home Screen.</p></div>
-            <div class="install-step"><span class="install-step-number">3</span><p>Save it as Sora Sushi.</p></div>
+            <div class="install-step">
+              <span class="install-step-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 16V4" />
+                  <path d="m8 8 4-4 4 4" />
+                  <path d="M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" />
+                </svg>
+              </span>
+              <p>1. Tap the Share button in Safari.</p>
+            </div>
+            <div class="install-step">
+              <span class="install-step-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 5v14" />
+                  <path d="M5 12h14" />
+                </svg>
+              </span>
+              <p>2. Select Add to Home Screen.</p>
+            </div>
+            <div class="install-step">
+              <span class="install-step-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 11.5 12 5l8 6.5" />
+                  <path d="M6.5 10.5V19h11v-8.5" />
+                </svg>
+              </span>
+              <p>3. Save it as ${brandName}.</p>
+            </div>
           `
           : `
-            <div class="install-step"><span class="install-step-number">1</span><p>Open your browser menu.</p></div>
-            <div class="install-step"><span class="install-step-number">2</span><p>Choose Install App or Add to Home Screen.</p></div>
-            <div class="install-step"><span class="install-step-number">3</span><p>Save it as Sora Sushi.</p></div>
+            <div class="install-step">
+              <span class="install-step-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="6" cy="12" r="1.1" />
+                  <circle cx="12" cy="12" r="1.1" />
+                  <circle cx="18" cy="12" r="1.1" />
+                </svg>
+              </span>
+              <p>1. Open your browser menu.</p>
+            </div>
+            <div class="install-step">
+              <span class="install-step-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 5v14" />
+                  <path d="M5 12h14" />
+                </svg>
+              </span>
+              <p>2. Choose Install App or Add to Home Screen.</p>
+            </div>
+            <div class="install-step">
+              <span class="install-step-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 11.5 12 5l8 6.5" />
+                  <path d="M6.5 10.5V19h11v-8.5" />
+                </svg>
+              </span>
+              <p>3. Save it as ${brandName}.</p>
+            </div>
           `;
         modal.hidden = false;
         document.documentElement.style.overflow = "hidden";
@@ -308,14 +359,18 @@ const schema = getRestaurantSchema(siteUrl.toString(), lang);
   }
   .install-close {
     position: absolute;
-    top: 14px;
-    right: 14px;
-    width: 40px;
-    height: 40px;
-    border: 1px solid rgba(255,255,255,.1);
-    border-radius: 999px;
-    background: rgba(255,255,255,.05);
-    color: var(--text);
+    top: 16px;
+    right: 16px;
+    width: 46px;
+    height: 46px;
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 16px;
+    background: rgba(255,255,255,.08);
+    color: rgba(246,239,230,.9);
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1;
+    box-shadow: 0 10px 24px rgba(0,0,0,.18);
   }
   .install-logo {
     width: 64px;
@@ -336,34 +391,33 @@ const schema = getRestaurantSchema(siteUrl.toString(), lang);
   }
   .install-steps {
     display: grid;
-    gap: 10px;
+    gap: 12px;
     margin-top: 20px;
     text-align: left;
   }
   .install-step {
     display: grid;
-    grid-template-columns: 36px 1fr;
+    grid-template-columns: 28px 1fr;
     gap: 12px;
-    align-items: start;
-    padding: 12px 14px;
+    align-items: center;
+    padding: 14px 16px;
     border-radius: 18px;
     background: rgba(255,255,255,.04);
     border: 1px solid rgba(255,255,255,.08);
   }
-  .install-step-number {
+  .install-step-icon {
     display: inline-grid;
     place-items: center;
-    width: 24px;
-    height: 24px;
-    border-radius: 999px;
-    background: rgba(212,165,74,.14);
+    width: 22px;
+    height: 22px;
     color: var(--gold-soft);
-    font-family: ui-sans-serif, system-ui, sans-serif;
-    font-size: 11px;
-    font-weight: 700;
+  }
+  .install-step-icon svg {
+    width: 18px;
+    height: 18px;
   }
   .install-step p {
-    margin: 2px 0 0;
+    margin: 0;
     color: var(--text);
     line-height: 1.6;
   }
